@@ -1,8 +1,11 @@
 package jp.techacademy.ushio.zaizen.taskapp2
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
@@ -37,6 +40,11 @@ class MainActivity : AppCompatActivity() {
 
         //ListViewの設定
         mTaskAdapter = TaskAdapter(this)
+
+        select_button.setOnClickListener {
+            Log.d("uztest", "select decided")
+            reloadListView()
+            }
 
         //ListViewをタップした時の処理
         listView1.setOnItemClickListener { parent, view, position, id ->
@@ -80,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         reloadListView()
     }
 
+
 /* select_category_text */
 /*    mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
     realm.close()
@@ -88,20 +97,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun reloadListView() {
         //Realmデータベースから、「すべてのデータを取得して新しい日時順に並べた結果」を取得
-        var scategory:String? = null
-            scategory = select_category_text.text.toString()
+        var scategory = select_category_text.text.toString()
 
-        Log.d("uztest","scategory="+scategory+"!!!")
+        Log.d("uztest", "scategory=" + scategory + "!!!")
 
         var taskRealmResults =
-            mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
-
-        if(scategory != null) {
-            var taskRealmResults =
+            if (scategory.isNotEmpty()) {
                 mRealm.where(Task::class.java).equalTo("category", scategory).findAll()
                     .sort("date", Sort.DESCENDING)
-        }
-            /*
+            } else {
+                mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
+            }
+        /*
             Log.d("uztest","scategory="+scategory.toString()+"!!!")
             if (scategory == "") {
                 Log.d("uztest", "null")
@@ -125,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         mRealm.close()
     }
 }
+
 
     /*
     private fun addTaskForTest(){
