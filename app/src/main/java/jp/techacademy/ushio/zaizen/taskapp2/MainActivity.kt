@@ -4,10 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast.LENGTH_LONG
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import io.realm.RealmChangeListener
 import io.realm.Sort
@@ -41,10 +46,12 @@ class MainActivity : AppCompatActivity() {
         //ListViewの設定
         mTaskAdapter = TaskAdapter(this)
 
+
         select_button.setOnClickListener {
-            Log.d("uztest", "select decided")
+            hideKeyboard()
             reloadListView()
             }
+
 
         //ListViewをタップした時の処理
         listView1.setOnItemClickListener { parent, view, position, id ->
@@ -89,18 +96,19 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-/* select_category_text */
-/*    mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
-    realm.close()
+private fun hideKeyboard() {
+    val view = this.currentFocus
+    if (view != null) {
+        val manager = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        manager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+}
 
- */
 
     private fun reloadListView() {
         //Realmデータベースから、「すべてのデータを取得して新しい日時順に並べた結果」を取得
         var scategory = select_category_text.text.toString()
-
-        Log.d("uztest", "scategory=" + scategory + "!!!")
-
+        
         var taskRealmResults =
             if (scategory.isNotEmpty()) {
                 mRealm.where(Task::class.java).equalTo("category", scategory).findAll()
